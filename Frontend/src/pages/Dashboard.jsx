@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../config/api';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -11,21 +11,19 @@ const Dashboard = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [query, setQuery] = useState('');   
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState({});
 
-  useEffect(() => {
-    fetchUsers();
-  }, [currentPage, search]);
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback( async () => {
     try {
       setLoading(true);
       const response = await api.get('/users', {
         params: {
           page: currentPage,
           limit: 10,
-          search
+          search: query,
         }
       });
       setUsers(response.data.users);
@@ -35,12 +33,16 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  },[currentPage, query]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(1);
-    fetchUsers();
+    setQuery(search);
   };
 
   const handleDeleteUser = async (userId) => {

@@ -8,12 +8,9 @@ const UserDetail = () => {
   const { id } = useParams();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-console.log(user)
+  
   useEffect(() => {
-    fetchUser();
-  }, [id]);
-
-  const fetchUser = async () => {
+    const fetchUser = async () => {
     try {
       setLoading(true);
       const response = await api.get(`/users/${id}`);
@@ -24,6 +21,10 @@ console.log(user)
       setLoading(false);
     }
   };
+
+    fetchUser();
+  }, [id]);
+
 
   if (loading) {
     return <LoadingSpinner />;

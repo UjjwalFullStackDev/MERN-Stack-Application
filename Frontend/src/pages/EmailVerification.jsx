@@ -11,15 +11,7 @@ const EmailVerification = () => {
   const token = searchParams.get('token');
 
   useEffect(() => {
-    if (token) {
-      verifyEmail();
-    } else {
-      setStatus('error');
-      setMessage('Invalid verification link');
-    }
-  }, [token]);
-
-  const verifyEmail = async () => {
+    const verifyEmail = async () => {
     try {
       const response = await api.get(`/auth/verify-email?token=${token}`);
       setStatus('success');
@@ -29,6 +21,15 @@ const EmailVerification = () => {
       setMessage(error.response?.data?.message || 'Email verification failed');
     }
   };
+  
+    if (token) {
+      verifyEmail();
+    } else {
+      setStatus('error');
+      setMessage('Invalid verification link');
+    }
+  }, [token]);
+
 
   if (status === 'verifying') {
     return (

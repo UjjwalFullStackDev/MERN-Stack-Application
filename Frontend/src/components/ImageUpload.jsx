@@ -32,7 +32,7 @@ const ImageUpload = ({ name, control, label, currentImage = null, className = ''
 
       onChange(file);
       
-      // Create preview
+      // Show preview
       const reader = new FileReader();
       reader.onload = (e) => {
         setPreview(e.target.result);
