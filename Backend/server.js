@@ -7,19 +7,15 @@ require('dotenv').config();
 
 const sequelize = require('./config/database');
 const redisClient = require('./config/redis');
-
-// Import models
 const User = require('./models/User');
 const RefreshToken = require('./models/RefreshToken');
-
-// Import routes
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 
 const app = express();
 
 // Security middleware
-// app.use(helmet());
+app.use(helmet());
 app.use(cors({
   origin: process.env.CLIENT_URL,
   credentials: true
@@ -31,22 +27,22 @@ app.use(
   express.static(path.join(__dirname, "uploads"), {
     setHeaders: (res) => {
       res.set("Access-Control-Allow-Origin", "http://localhost:5173");
-      res.set("Cross-Origin-Resource-Policy", "cross-origin"); // <– fixes image blocking
+      res.set("Cross-Origin-Resource-Policy", "cross-origin");
     },
   })
 );
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100
 });
 
 app.use(limiter);
 
 // Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true}));
 
 // Static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -80,7 +76,7 @@ app.use('*', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-// Initialize database and start server
+// Initialize database
 const startServer = async () => {
   try {
     // Connect to Redis
@@ -94,11 +90,11 @@ const startServer = async () => {
     User.hasMany(RefreshToken, { foreignKey: 'userId', onDelete: 'CASCADE' });
     RefreshToken.belongsTo(User, { foreignKey: 'userId' });
     
-    // Sync database (create tables if they don't exist)
+    // Sync database
     await sequelize.sync();
     console.log('Database synchronized');
     
-    // Create uploads directory if it doesn't exist
+    // Create upload dir automaticlly
     const fs = require('fs');
     const uploadsDir = path.join(__dirname, 'uploads', 'profiles');
     if (!fs.existsSync(uploadsDir)) {

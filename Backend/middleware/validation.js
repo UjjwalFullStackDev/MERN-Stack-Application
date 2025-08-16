@@ -4,9 +4,9 @@ const validateRegistration = [
   body('name')
     .trim()
     .notEmpty()
-    .withMessage('First name is required')
+    .withMessage('Name is required')
     .isLength({ min: 2, max: 50 })
-    .withMessage('First name must be between 2 and 50 characters'),
+    .withMessage('Name must be between 2 and 50 characters'),
   
   body('email')
     .isEmail()
