@@ -19,7 +19,7 @@ const authenticateToken = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findByPk(decoded.id);
-    
+
     if (!user) {
       return res.status(401).json({ message: 'User not found' });
     }
@@ -27,7 +27,7 @@ const authenticateToken = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    return res.status(403).json({ message: 'Invalid token' });
+    return res.status(401).json({ message: 'Invalid token' });
   }
 };
 
